@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Drawing Study Plan — Character Illustration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #18140f;
+    --paper: #f6f1e7;
+    --warm: #ede5d0;
+    --card: #faf7f0;
+    --accent: #c0392b;
+    --gold: #b8860b;
+    --green: #2d6a4f;
+    --purple: #5a3e8a;
+    --muted: #8a7d6e;
+    --line: #d8cebb;
+    --line-light: #e8dfd0;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.7;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(246,241,231,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 56px;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 15px; font-style: italic; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .nav-bar { width: 120px; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .nav-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 2px; transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  .nav-pct { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; color: var(--accent); min-width: 32px; }
+
+  /* HERO */
+  .hero {
+    padding: 72px 48px 56px;
+    border-bottom: 1px solid var(--line);
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 32px; align-items: end;
+  }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  h1 { font-family: 'Playfair Display', serif; font-size: clamp(38px,5.5vw,64px); line-height: 1.04; font-weight: 700; letter-spacing: -0.025em; }
+  h1 em { font-style: italic; color: var(--accent); }
+  .hero-sub { margin-top: 16px; font-size: 14px; color: var(--muted); font-family: 'Playfair Display', serif; font-style: italic; line-height: 1.6; max-width: 480px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .pill { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; padding: 5px 12px; border-radius: 2px; background: var(--ink); color: var(--paper); }
+  .pill-a { background: var(--accent); }
+  .pill-o { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+  .hero-stats { text-align: right; display: flex; flex-direction: column; gap: 10px; }
+  .stat { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; }
+  .stat strong { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--ink); display: block; line-height: 1.1; }
+
+  /* OVERVIEW */
+  .overview { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--line); }
+  .ov { padding: 22px 28px; border-right: 1px solid var(--line); cursor: pointer; transition: background 0.18s; }
+  .ov:last-child { border-right: none; }
+  .ov:hover { background: var(--warm); }
+  .ov.active { background: var(--ink); }
+  .ov-lbl { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .ov.active .ov-lbl { color: rgba(255,255,255,0.4); }
+  .ov-ttl { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; }
+  .ov.active .ov-ttl { color: #fff; }
+  .ov-wks { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); margin-top: 3px; }
+  .ov.active .ov-wks { color: rgba(255,255,255,0.35); }
+  .ov-mini { height: 2px; background: var(--line); border-radius: 1px; margin-top: 10px; overflow: hidden; }
+  .ov.active .ov-mini { background: rgba(255,255,255,0.15); }
+  .ov-mfill { height: 100%; width: 0%; border-radius: 1px; background: var(--accent); transition: width 0.5s ease; }
+  .ov.active .ov-mfill { background: #fff; }
+
+  /* MAIN */
+  main { padding: 0 48px 100px; }
+
+  /* PHASE */
+  .phase { margin-top: 64px; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .phase.visible { opacity: 1; transform: none; }
+  .ph-hd { display: flex; align-items: baseline; gap: 16px; padding-bottom: 14px; border-bottom: 2px solid var(--ink); margin-bottom: 28px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+  .ph-num { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; color: var(--muted); }
+  .ph-ttl { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; flex: 1; }
+  .ph-dur { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 0.1em; }
+  .ph-tog { font-size: 18px; color: var(--muted); opacity: 0.5; transition: transform 0.3s; line-height: 1; }
+  .phase.collapsed .ph-tog { transform: rotate(-90deg); }
+  .ph-sub { font-size: 13px; color: var(--muted); font-family: 'Playfair Display', serif; font-style: italic; margin-bottom: 28px; margin-top: -12px; line-height: 1.6; }
+  .ph-body { overflow: hidden; max-height: 5000px; opacity: 1; transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease; }
+  .phase.collapsed .ph-body { max-height: 0; opacity: 0; }
+
+  /* LESSON GRID */
+  .lg { display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+
+  /* LESSON CARD */
+  .lc { background: var(--card); padding: 26px 26px 20px; display: flex; flex-direction: column; position: relative; transition: background 0.2s; }
+  .lc:hover { background: var(--warm); }
+  .lc.done { background: #f0f7f3; }
+  .lc.done:hover { background: #e8f4ee; }
+  .lc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .lc-num { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em; color: var(--muted); }
+  .lc-chk { width: 20px; height: 20px; border: 1.5px solid var(--line); border-radius: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, background 0.2s; flex-shrink: 0; }
+  .lc-chk:hover { border-color: var(--green); }
+  .lc.done .lc-chk { background: var(--green); border-color: var(--green); }
+  .chk-mark { font-size: 11px; color: #fff; opacity: 0; transition: opacity 0.2s; line-height: 1; }
+  .lc.done .chk-mark { opacity: 1; }
+  .lc-ttl { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+  .lc-goal { font-size: 12px; color: var(--muted); line-height: 1.65; margin-bottom: 16px; font-style: italic; font-family: 'Playfair Display', serif; }
+  .lc-stog { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: color 0.15s; }
+  .lc-stog:hover { color: var(--ink); }
+  .sarrow { transition: transform 0.25s; font-size: 8px; }
+  .lc.open .sarrow { transform: rotate(90deg); }
+  .lc-swrap { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.35s ease, opacity 0.25s ease, margin 0.25s ease; margin-top: 0; }
+  .lc.open .lc-swrap { max-height: 600px; opacity: 1; margin-top: 12px; }
+  .lc-steps { list-style: none; }
+  .lc-steps li { font-size: 11.5px; line-height: 1.7; padding: 5px 0 5px 16px; position: relative; color: var(--ink); border-top: 1px solid var(--line-light); }
+  .lc-steps li:first-child { border-top: none; }
+  .lc-steps li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 9px; top: 7px; }
+  .lc-ft { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; margin-top: auto; border-top: 1px solid var(--line-light); }
+  .lc-time { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.08em; }
+  .tag { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border: 1px solid currentColor; border-radius: 1px; }
+  .t-f { color: var(--gold); }
+  .t-p { color: var(--green); }
+  .t-c { color: var(--accent); }
+  .t-s { color: var(--purple); }
+
+  /* MILESTONES */
+  .milestones { margin-top: 64px; border: 1px solid var(--line); padding: 36px 40px; background: var(--warm); }
+  .ms-lbl { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 28px; }
+  .ms-track { display: flex; align-items: flex-start; position: relative; }
+  .ms-track::before { content: ''; position: absolute; top: 18px; left: 18px; right: 18px; height: 2px; background: var(--line); z-index: 0; }
+  .ms-tfill { position: absolute; top: 18px; left: 18px; height: 2px; background: var(--accent); z-index: 1; width: 0%; transition: width 0.7s cubic-bezier(0.34,1.56,0.64,1); }
+  .ms { flex: 1; text-align: center; position: relative; z-index: 2; }
+  .ms-dot { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-family: 'DM Mono', monospace; font-size: 9px; transition: border-color 0.4s, background 0.4s, color 0.4s; color: var(--muted); }
+  .ms.reached .ms-dot { border-color: var(--accent); background: var(--accent); color: #fff; }
+  .ms-ttl { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .ms-sub { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+
+  /* TIPS */
+  .tips { margin-top: 64px; background: var(--ink); color: var(--paper); padding: 40px 48px; display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: start; }
+  .tips-hd { font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; line-height: 1.4; }
+  .tips-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .tip h4 { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .tip p { font-size: 12px; line-height: 1.7; color: #bfb5a4; }
+
+  /* RESET */
+  .reset-wrap { text-align: center; padding: 40px 0 0; }
+  .reset-btn { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 10px 20px; border: 1px solid var(--line); border-radius: 2px; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: var(--paper); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 12px 24px; border-radius: 2px; z-index: 1000; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); pointer-events: none; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 768px) {
+    .hero { padding: 48px 24px 40px; grid-template-columns: 1fr; }
+    .hero-stats { text-align: left; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+    main { padding-left: 24px; padding-right: 24px; }
+    .tips { padding: 32px 24px; grid-template-columns: 1fr; gap: 24px; }
+    .overview { grid-template-columns: repeat(2,1fr); }
+    .ov:nth-child(2) { border-right: none; }
+    .lg { grid-template-columns: 1fr; }
+    .tips-grid { grid-template-columns: 1fr; }
+    .ms-track { flex-direction: column; align-items: stretch; gap: 16px; }
+    .ms-track::before, .ms-tfill { display: none; }
+    .ms { display: flex; align-items: center; gap: 16px; text-align: left; }
+    .ms-dot { margin: 0; flex-shrink: 0; }
+    nav { padding: 0 20px; }
+    .nav-bar { width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Drawing Study Plan</div>
+  <div class="nav-right">
+    <span class="nav-label">Progress</span>
+    <div class="nav-bar"><div class="nav-fill" id="navFill"></div></div>
+    <span class="nav-pct" id="navPct">0%</span>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">iPad Pro · Apple Pencil · 16-Week Curriculum</div>
+    <h1>Drawing Toward<br><em>Your Story</em></h1>
+    <p class="hero-sub">A structured path from gesture lines to cinematic character illustration — built for 30–45 min daily practice.</p>
+    <div class="pills">
+      <span class="pill pill-a">Character Illustration</span>
+      <span class="pill">30–45 min / day</span>
+      <span class="pill pill-o">Beginner+</span>
+      <span class="pill pill-o">Visual Storytelling</span>
+      <span class="pill pill-o">Procreate</span>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><strong>4</strong>Phases</div>
+    <div class="stat"><strong>16</strong>Lessons</div>
+    <div class="stat"><strong>16</strong>Weeks</div>
+  </div>
+</header>
+
+<div class="overview">
+  <div class="ov active" onclick="scrollToPhase(0)">
+    <div class="ov-lbl">Phase 01</div>
+    <div class="ov-ttl">Foundations</div>
+    <div class="ov-wks">Weeks 1–3 · 4 lessons</div>
+    <div class="ov-mini"><div class="ov-mfill" id="pb0"></div></div>
+  </div>
+  <div class="ov" onclick="scrollToPhase(1)">
+    <div class="ov-lbl">Phase 02</div>
+    <div class="ov-ttl">Perspective</div>
+    <div class="ov-wks">Weeks 4–7 · 4 lessons</div>
+    <div class="ov-mini"><div class="ov-mfill" id="pb1"></div></div>
+  </div>
+  <div class="ov" onclick="scrollToPhase(2)">
+    <div class="ov-lbl">Phase 03</div>
+    <div class="ov-ttl">Characters</div>
+    <div class="ov-wks">Weeks 8–12 · 5 lessons</div>
+    <div class="ov-mini"><div class="ov-mfill" id="pb2"></div></div>
+  </div>
+  <div class="ov" onclick="scrollToPhase(3)">
+    <div class="ov-lbl">Phase 04</div>
+    <div class="ov-ttl">Storytelling</div>
+    <div class="ov-wks">Weeks 13–16 · 3 lessons</div>
+    <div class="ov-mini"><div class="ov-mfill" id="pb3"></div></div>
+  </div>
+</div>
+
+<main>
+
+<!-- PHASE 1 -->
+<section class="phase" id="ph0">
+  <div class="ph-hd" onclick="togglePhase(0)">
+    <span class="ph-num">PHASE 01</span>
+    <span class="ph-ttl">Foundations &amp; Pencil Control</span>
+    <span class="ph-dur">Weeks 1–3</span>
+    <span class="ph-tog">▾</span>
+  </div>
+  <p class="ph-sub">Build confidence with line quality, basic forms, and the iPad as a drawing tool.</p>
+  <div class="ph-body">
+    <div class="lg">
+
+      <div class="lc" id="lc0">
+        <div class="lc-top"><span class="lc-num">LESSON 01</span><div class="lc-chk" onclick="toggleLesson(event,0)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Lines, Pressure &amp; Gesture Strokes</div>
+        <div class="lc-goal">Get comfortable with Apple Pencil pressure sensitivity and make intentional marks.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,0)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Set up Procreate: create a canvas, pick a simple pencil brush</li>
+          <li>Draw 50 straight horizontal lines varying from whisper-light to fully pressed</li>
+          <li>Draw 50 curved lines — smooth arcs, S-curves, spirals</li>
+          <li>Practice "ghosting": hover the pencil along a path before touching down</li>
+          <li>Fill one page with loose, fast gestural marks — no second-guessing</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">30 min · Every other day × 1 wk</span><span class="tag t-f">Foundations</span></div>
+      </div>
+
+      <div class="lc" id="lc1">
+        <div class="lc-top"><span class="lc-num">LESSON 02</span><div class="lc-chk" onclick="toggleLesson(event,1)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Basic Forms: Sphere, Box, Cylinder</div>
+        <div class="lc-goal">Understand how 3D forms are constructed — these become heads, torsos, and limbs later.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,1)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw a circle → shade one side lightly for a sphere (no reference yet)</li>
+          <li>Draw a box in 3/4 view; sketch the top, front, and side faces</li>
+          <li>Draw a cylinder — ellipse on top, rectangle sides, ellipse at base</li>
+          <li>Combine 3 forms into a simple robot figure (box body, sphere head, cylinders for arms)</li>
+          <li>Rotate each form: draw the same object from 3 different angles</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">35 min · 3 sessions</span><span class="tag t-f">Foundations</span></div>
+      </div>
+
+      <div class="lc" id="lc2">
+        <div class="lc-top"><span class="lc-num">LESSON 03</span><div class="lc-chk" onclick="toggleLesson(event,2)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Contour Drawing &amp; Observation</div>
+        <div class="lc-goal">Train your eye-hand connection — the core skill all drawing depends on.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,2)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Pick a simple object (mug, shoe, phone). Draw its outline without lifting the pencil</li>
+          <li>Do a "blind contour": draw while looking only at the object, not your screen</li>
+          <li>Draw the same object again looking at both — compare the two versions</li>
+          <li>Repeat with 2 other objects; focus on negative space around them</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">30 min · 2 sessions</span><span class="tag t-f">Foundations</span></div>
+      </div>
+
+      <div class="lc" id="lc3">
+        <div class="lc-top"><span class="lc-num">LESSON 04</span><div class="lc-chk" onclick="toggleLesson(event,3)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Value &amp; Light: Simple Shading</div>
+        <div class="lc-goal">Learn to model form with light and shadow — makes everything feel 3D.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,3)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Create a value scale: 6 boxes from white → black using only pencil pressure</li>
+          <li>Draw a sphere; pick a light source from upper-left; shade the shadow side</li>
+          <li>Add a cast shadow beneath the sphere on the ground plane</li>
+          <li>Draw the box from Lesson 02 with light hitting only the top face</li>
+          <li>Try cross-hatching vs. smooth blending — notice the texture difference</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 2 sessions</span><span class="tag t-f">Foundations</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 2 -->
+<section class="phase" id="ph1">
+  <div class="ph-hd" onclick="togglePhase(1)">
+    <span class="ph-num">PHASE 02</span>
+    <span class="ph-ttl">Perspective Drawing</span>
+    <span class="ph-dur">Weeks 4–7</span>
+    <span class="ph-tog">▾</span>
+  </div>
+  <p class="ph-sub">Master 1-point and 2-point perspective to build convincing environments for your characters.</p>
+  <div class="ph-body">
+    <div class="lg">
+
+      <div class="lc" id="lc4">
+        <div class="lc-top"><span class="lc-num">LESSON 05</span><div class="lc-chk" onclick="toggleLesson(event,4)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">1-Point Perspective: The Room</div>
+        <div class="lc-goal">Understand the horizon line, vanishing point, and how depth works on a flat page.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,4)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw a horizontal line across the canvas middle — this is your horizon</li>
+          <li>Place one dot on the line (vanishing point). Draw a rectangle for the room's back wall</li>
+          <li>Draw lines from the rectangle corners to the VP — these become walls, floor, ceiling</li>
+          <li>Add a door, a window, and a box on the floor using the same vanishing point</li>
+          <li>Sketch the same room from a low horizon (worm's-eye) and high horizon (bird's-eye)</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 3 sessions</span><span class="tag t-p">Perspective</span></div>
+      </div>
+
+      <div class="lc" id="lc5">
+        <div class="lc-top"><span class="lc-num">LESSON 06</span><div class="lc-chk" onclick="toggleLesson(event,5)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">2-Point Perspective: City Blocks</div>
+        <div class="lc-goal">Draw buildings and objects at an angle — essential for dynamic scenes.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,5)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw a horizon line; place two vanishing points near each end</li>
+          <li>Draw a vertical edge in the center — the near corner of a building</li>
+          <li>Draw lines from the top and bottom of this edge to both vanishing points</li>
+          <li>Add a second building behind the first; add windows using the same VPs</li>
+          <li>Draw a simple street scene: two buildings, a sidewalk, a lamp post</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 4 sessions</span><span class="tag t-p">Perspective</span></div>
+      </div>
+
+      <div class="lc" id="lc6">
+        <div class="lc-top"><span class="lc-num">LESSON 07</span><div class="lc-chk" onclick="toggleLesson(event,6)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Objects in Perspective: Furniture &amp; Props</div>
+        <div class="lc-goal">Place everyday objects convincingly in a scene — these will become storytelling props.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,6)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw a table in 2-point perspective; add a chair beside it</li>
+          <li>Draw a bookshelf against a wall; add books of varying widths</li>
+          <li>Place a cup and lamp on the table — each uses the same vanishing points</li>
+          <li>Sketch a bedroom or café corner using all elements from this lesson</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 3 sessions</span><span class="tag t-p">Perspective</span></div>
+      </div>
+
+      <div class="lc" id="lc7">
+        <div class="lc-top"><span class="lc-num">LESSON 08</span><div class="lc-chk" onclick="toggleLesson(event,7)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Placing a Figure in a Scene</div>
+        <div class="lc-goal">Understand figure scale relative to environments — characters must feel "in" a space.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,7)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Key rule: if a figure's head is near the horizon, they're eye-level with the viewer</li>
+          <li>Draw your room from Lesson 05; add a simple stick figure standing in it</li>
+          <li>Move the horizon up — redraw the figure (now you're looking down on them)</li>
+          <li>Add two figures at different depths: far = smaller, close = larger, heads stay near horizon</li>
+          <li>Sketch a café scene with 3 people at different depths</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 3 sessions</span><span class="tag t-p">Perspective</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 3 -->
+<section class="phase" id="ph2">
+  <div class="ph-hd" onclick="togglePhase(2)">
+    <span class="ph-num">PHASE 03</span>
+    <span class="ph-ttl">Character Construction</span>
+    <span class="ph-dur">Weeks 8–12</span>
+    <span class="ph-tog">▾</span>
+  </div>
+  <p class="ph-sub">Build a repeatable system for drawing human figures, faces, and expressions for storytelling.</p>
+  <div class="ph-body">
+    <div class="lg">
+
+      <div class="lc" id="lc8">
+        <div class="lc-top"><span class="lc-num">LESSON 09</span><div class="lc-chk" onclick="toggleLesson(event,8)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">The Head as a 3D Form</div>
+        <div class="lc-goal">Construct a believable head from any angle before adding facial features.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,8)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw the Loomis method head: a sphere with a flat side plane cut off</li>
+          <li>Add the center line (vertical) and brow line (horizontal) to guide feature placement</li>
+          <li>Rotate the head: draw it facing left, right, and slightly upward</li>
+          <li>Add basic landmarks: brow, eye socket, nose base, chin — no detail yet</li>
+          <li>Do 10 quick head sketches in 10 different rotations on one canvas</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 4 sessions</span><span class="tag t-c">Character</span></div>
+      </div>
+
+      <div class="lc" id="lc9">
+        <div class="lc-top"><span class="lc-num">LESSON 10</span><div class="lc-chk" onclick="toggleLesson(event,9)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Faces: Features &amp; Expressions</div>
+        <div class="lc-goal">Draw eyes, nose, and mouth convincingly and use them to convey emotion.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,9)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Study the eye as an almond shape; draw 20 eyes at different angles and openness states</li>
+          <li>Draw a simple nose as a wedge — 3 spheres (nostrils + tip) works well for stylized art</li>
+          <li>Draw a mouth: top lip has an M-shape, bottom is fuller. Draw 15 mouths</li>
+          <li>Combine features on your Lesson 09 heads: neutral, happy, angry, sad, surprised</li>
+          <li>Create an emotion chart: 9 expressions on one page for a single character</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 4 sessions</span><span class="tag t-c">Character</span></div>
+      </div>
+
+      <div class="lc" id="lc10">
+        <div class="lc-top"><span class="lc-num">LESSON 11</span><div class="lc-chk" onclick="toggleLesson(event,10)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Body Proportions &amp; the Figure</div>
+        <div class="lc-goal">Use the "head as unit" system to draw proportional figures quickly.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,10)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Standard: the body is ~7–8 heads tall. Draw a stack of head-sized boxes as a guide</li>
+          <li>Sketch the figure over your stack: head (1), torso (2–4), legs (4–7), feet at 7–8</li>
+          <li>Use simple shapes: egg for ribcage, oval for pelvis, cylinders for limbs</li>
+          <li>Draw the same figure: standing, sitting, crouching</li>
+          <li>Do 5-minute gesture drawings — set a timer, capture just the "flow" of a pose</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 5 sessions</span><span class="tag t-c">Character</span></div>
+      </div>
+
+      <div class="lc" id="lc11">
+        <div class="lc-top"><span class="lc-num">LESSON 12</span><div class="lc-chk" onclick="toggleLesson(event,11)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Hands &amp; Expressive Poses</div>
+        <div class="lc-goal">Master the hardest parts of figure drawing; use pose to tell micro-stories.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,11)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw the hand as a block (palm) + 4 sausages (fingers) + a thumb. Forget detail first</li>
+          <li>Practice 10 hands: pointing, open palm, holding an object, gripping, waving</li>
+          <li>Draw a full figure in a story pose: reading, running, reaching, looking up in awe</li>
+          <li>Use contrapposto (weight on one leg, hip tilt) to make standing poses dynamic, not stiff</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 4 sessions</span><span class="tag t-c">Character</span></div>
+      </div>
+
+      <div class="lc" id="lc12">
+        <div class="lc-top"><span class="lc-num">LESSON 13</span><div class="lc-chk" onclick="toggleLesson(event,12)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Your Character: Design &amp; Silhouette</div>
+        <div class="lc-goal">Create an original recurring character for your visual stories.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,12)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Design a character silhouette: it should read clearly in solid black with no detail</li>
+          <li>Decide on proportions: realistic (7–8 heads), manga (6–7), or chibi (2–3)</li>
+          <li>Draw a character reference sheet: front, side, 3/4 view, and close-up face</li>
+          <li>Draw them in 3 costumes or outfits that reflect their personality</li>
+          <li>Draw them doing 5 different actions from Lesson 12</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 4 sessions</span><span class="tag t-c">Character</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PHASE 4 -->
+<section class="phase" id="ph3">
+  <div class="ph-hd" onclick="togglePhase(3)">
+    <span class="ph-num">PHASE 04</span>
+    <span class="ph-ttl">Visual Storytelling</span>
+    <span class="ph-dur">Weeks 13–16</span>
+    <span class="ph-tog">▾</span>
+  </div>
+  <p class="ph-sub">Bring perspective and character together into composed illustrations and sequential panels.</p>
+  <div class="ph-body">
+    <div class="lg">
+
+      <div class="lc" id="lc13">
+        <div class="lc-top"><span class="lc-num">LESSON 14</span><div class="lc-chk" onclick="toggleLesson(event,13)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Composition: Rule of Thirds &amp; Framing</div>
+        <div class="lc-goal">Make every illustration feel intentional and visually guided.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,13)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Draw a 3×3 grid — place your subject at an intersection point, not the center</li>
+          <li>Sketch the same simple scene 4 times with different compositions; compare which reads best</li>
+          <li>Use "lead room": a character looking left should have more space to their left</li>
+          <li>Try framing: use a doorway, tree, or window to frame your subject within the scene</li>
+          <li>Study one favorite illustration: identify where the rule of thirds applies</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">40 min · 2 sessions</span><span class="tag t-s">Storytelling</span></div>
+      </div>
+
+      <div class="lc" id="lc14">
+        <div class="lc-top"><span class="lc-num">LESSON 15</span><div class="lc-chk" onclick="toggleLesson(event,14)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Camera Angles &amp; Cinematic Shots</div>
+        <div class="lc-goal">Use horizon height like a film director to control emotional impact.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,14)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Low angle (horizon below subject): makes character feel powerful or threatening</li>
+          <li>High angle (horizon above): makes character feel small, vulnerable, or observed</li>
+          <li>Eye level: neutral, naturalistic — good for dialogue scenes</li>
+          <li>Draw your character from all 3 angles in the same environment</li>
+          <li>Thumbnail 6 panels of a wordless scene: a character finding something unexpected</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 3 sessions</span><span class="tag t-s">Storytelling</span></div>
+      </div>
+
+      <div class="lc" id="lc15">
+        <div class="lc-top"><span class="lc-num">LESSON 16</span><div class="lc-chk" onclick="toggleLesson(event,15)"><span class="chk-mark">✓</span></div></div>
+        <div class="lc-ttl">Your First Illustration Page</div>
+        <div class="lc-goal">Produce a finished, composed illustration combining everything learned.</div>
+        <div class="lc-stog" onclick="toggleSteps(event,15)"><span class="sarrow">▶</span> Show practice steps</div>
+        <div class="lc-swrap"><ul class="lc-steps">
+          <li>Choose a moment: a character arriving somewhere new, discovering an object, or meeting someone</li>
+          <li>Thumbnail 3 compositions (small, rough, 5 min each) — pick the strongest</li>
+          <li>Build it at full canvas size with a perspective grid underneath</li>
+          <li>Sketch the environment first (Phase 2), then place your character (Phase 3)</li>
+          <li>Add value/shading (Phase 1) and refine line weight: thick outlines, thin interior details</li>
+          <li>Optional: add a second panel showing what happens next</li>
+        </ul></div>
+        <div class="lc-ft"><span class="lc-time">45 min · 5–6 sessions</span><span class="tag t-s">Storytelling</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- MILESTONES -->
+<div class="milestones">
+  <div class="ms-lbl">Skill Milestones — unlocked as you complete lessons</div>
+  <div class="ms-track">
+    <div class="ms-tfill" id="msFill"></div>
+    <div class="ms" id="ms0">
+      <div class="ms-dot">W3</div>
+      <div><div class="ms-ttl">Mark Maker</div><div class="ms-sub">Confident lines,<br/>forms, shading</div></div>
+    </div>
+    <div class="ms" id="ms1">
+      <div class="ms-dot">W7</div>
+      <div><div class="ms-ttl">Space Builder</div><div class="ms-sub">Environments with<br/>correct depth</div></div>
+    </div>
+    <div class="ms" id="ms2">
+      <div class="ms-dot">W12</div>
+      <div><div class="ms-ttl">Character Artist</div><div class="ms-sub">Original figures,<br/>faces, expressions</div></div>
+    </div>
+    <div class="ms" id="ms3">
+      <div class="ms-dot">W16</div>
+      <div><div class="ms-ttl">Visual Storyteller</div><div class="ms-sub">Cinematic composed<br/>illustrations</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TIPS -->
+<div class="tips">
+  <div class="tips-hd">Working Well<br/>on iPad</div>
+  <div class="tips-grid">
+    <div class="tip">
+      <h4>App Setup</h4>
+      <p>Use Procreate for its layer system and brush quality. Enable Perspective Drawing Guide via Canvas → Drawing Guide → 2-Point Perspective. It autosnaps lines to your vanishing points.</p>
+    </div>
+    <div class="tip">
+      <h4>Layer Strategy</h4>
+      <p>Keep rough sketches on one layer at 30% opacity, then trace clean lines on a layer above. This separates thinking from rendering — a professional habit worth building from day one.</p>
+    </div>
+    <div class="tip">
+      <h4>Reference Use</h4>
+      <p>Use Procreate's Reference window or split-screen with Pinterest. Copying from reference is not cheating — it's how every artist trains. The goal is internalizing forms, not memorizing them.</p>
+    </div>
+  </div>
+</div>
+
+<div class="reset-wrap">
+  <button class="reset-btn" onclick="resetAll()">Reset all progress</button>
+</div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const TOTAL = 16;
+  const PHASE_RANGES = [[0,3],[4,7],[8,12],[13,15]];
+  const MS_THRESH = [4, 8, 13, 16];
+
+  let done = new Set();
+
+  function save() {
+    try { localStorage.setItem('dsp2', JSON.stringify([...done])); } catch(e) {}
+  }
+  function load() {
+    try {
+      const d = localStorage.getItem('dsp2');
+      if (d) done = new Set(JSON.parse(d));
+    } catch(e) {}
+  }
+
+  function toggleLesson(e, id) {
+    e.stopPropagation();
+    const card = document.getElementById('lc' + id);
+    if (done.has(id)) {
+      done.delete(id);
+      card.classList.remove('done');
+      showToast('Unmarked');
+    } else {
+      done.add(id);
+      card.classList.add('done');
+      showToast('Lesson complete ✓');
+    }
+    save(); updateUI();
+  }
+
+  function toggleSteps(e, id) {
+    e.stopPropagation();
+    document.getElementById('lc' + id).classList.toggle('open');
+  }
+
+  function togglePhase(i) {
+    document.getElementById('ph' + i).classList.toggle('collapsed');
+  }
+
+  function scrollToPhase(i) {
+    const el = document.getElementById('ph' + i);
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+  }
+
+  function updateUI() {
+    const pct = Math.round((done.size / TOTAL) * 100);
+    document.getElementById('navFill').style.width = pct + '%';
+    document.getElementById('navPct').textContent = pct + '%';
+
+    PHASE_RANGES.forEach(([a, b], i) => {
+      let cnt = 0;
+      for (let j = a; j <= b; j++) if (done.has(j)) cnt++;
+      document.getElementById('pb' + i).style.width = Math.round(cnt / (b - a + 1) * 100) + '%';
+    });
+
+    MS_THRESH.forEach((t, i) => {
+      document.getElementById('ms' + i).classList.toggle('reached', done.size >= t);
+    });
+
+    const reached = MS_THRESH.filter(t => done.size >= t).length;
+    document.getElementById('msFill').style.width = (reached <= 1 ? 0 : ((reached - 1) / 3) * 100) + '%';
+  }
+
+  function applyState() {
+    done.forEach(id => {
+      const el = document.getElementById('lc' + id);
+      if (el) el.classList.add('done');
+    });
+    updateUI();
+  }
+
+  function resetAll() {
+    if (!confirm('Reset all lesson progress?')) return;
+    done.clear();
+    document.querySelectorAll('.lc').forEach(c => c.classList.remove('done'));
+    save(); updateUI();
+    showToast('Progress reset');
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function updateActiveNav() {
+    let active = 0;
+    for (let i = 0; i < 4; i++) {
+      if (document.getElementById('ph' + i).getBoundingClientRect().top < 120) active = i;
+    }
+    document.querySelectorAll('.ov').forEach((el, i) => el.classList.toggle('active', i === active));
+  }
+
+  function revealPhases() {
+    document.querySelectorAll('.phase').forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) el.classList.add('visible');
+    });
+  }
+
+  window.addEventListener('scroll', () => { updateActiveNav(); revealPhases(); }, { passive: true });
+
+  load(); applyState(); revealPhases();
+</script>
+</body>
+</html>
